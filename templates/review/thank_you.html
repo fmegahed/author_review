@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You{% endblock %}
+{% block content_class %}narrow{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; margin-top: 40px;">
+  <h2 style="color: #28a745;">Thank You!</h2>
+  <p>You've reviewed all <strong>{{ total_papers }}</strong> paper{{ 's' if total_papers != 1 else '' }}.</p>
+  <p>Your feedback is invaluable for validating our AI extraction pipeline and will be included
+     in our research paper on Generative AI for Quality Engineering.</p>
+
+  <div class="info-card" style="margin-top: 20px;">
+    <p>You can revisit and edit your reviews at any time using this same link.</p>
+  </div>
+
+  <a href="/review/{{ token }}/list" class="btn btn-secondary" style="margin-top: 12px;">
+    View / Edit Your Reviews
+  </a>
+</div>
+{% endblock %}

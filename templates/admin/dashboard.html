@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block header_nav %}
+<a href="/admin/tokens">All Tokens</a>
+<a href="/admin/export">Export CSV</a>
+<a href="/admin/logout">Logout</a>
+{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<!-- Search for Author -->
+<div class="card">
+  <h3>Search for Author Papers</h3>
+  <form method="post" action="/admin/search">
+    <div class="form-group">
+      <label for="author_name">Author Name</label>
+      <input type="text" id="author_name" name="author_name" class="form-control"
+             placeholder="e.g., Fadel M. Megahed" value="{{ search_name or '' }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Search All Tracks</button>
+    <a href="/admin/refresh-cache" class="btn btn-secondary btn-sm" style="margin-left: 8px;">Refresh CSV Cache</a>
+  </form>
+</div>
+
+<!-- Search Results -->
+{% if search_results is not none %}
+<div class="card">
+  <h3>Search Results for "{{ search_name }}"</h3>
+  {% if search_results %}
+  <form method="post" action="/admin/create-token">
+    <input type="hidden" name="author_name" value="{{ search_name }}">
+    <div class="form-group">
+      <label for="author_email">Author Email</label>
+      <input type="email" id="author_email" name="author_email" class="form-control"
+             placeholder="author@example.com" required>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 40px;">
+            <input type="checkbox" id="select-all" checked>
+          </th>
+          <th>Title</th>
+          <th>Track</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for paper in search_results %}
+        <tr>
+          <td>
+            <input type="checkbox" name="arxiv_ids" value="{{ paper.arxiv_id }}:{{ paper.track }}" checked>
+          </td>
+          <td>
+            <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank">{{ paper.title }}</a>
+          </td>
+          <td><span class="track-badge {{ paper.track }}">{{ paper.track }}</span></td>
+          <td>{{ paper.submitted }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">Generate Review Token</button>
+  </form>
+  {% else %}
+  <div class="info-card">No papers found for this author across any track.</div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Generated Token -->
+{% if generated_url %}
+<div class="success-card">
+  <h3>Review Link Generated</h3>
+  <p>Share this link with <strong>{{ token_author }}</strong>:</p>
+  <div class="copy-url-container">
+    <input type="text" class="form-control" value="{{ generated_url }}" readonly>
+    <button type="button" class="btn btn-primary btn-copy">Copy</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Recent Tokens -->
+<div class="card">
+  <h3>Recent Tokens</h3>
+  {% if recent_tokens %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Author</th>
+        <th>Email</th>
+        <th>Papers</th>
+        <th>Reviewed</th>
+        <th>Created</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in recent_tokens %}
+      <tr>
+        <td>{{ t.author_name }}</td>
+        <td>{{ t.author_email }}</td>
+        <td>{{ t.total }}</td>
+        <td>{{ t.reviewed }}</td>
+        <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>
+          {% if t.is_active %}
+          <span style="color: #28a745;">Active</span>
+          {% else %}
+          <span style="color: #999;">Inactive</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color: #999;">No tokens created yet.</p>
+  {% endif %}
+</div>
+
+<script>
+document.getElementById('select-all')?.addEventListener('change', function() {
+  document.querySelectorAll('input[name="arxiv_ids"]').forEach(cb => cb.checked = this.checked);
+});
+</script>
+{% endblock %}

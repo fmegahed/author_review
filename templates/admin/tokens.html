@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}All Tokens{% endblock %}
+
+{% block header_nav %}
+<a href="/admin/">Dashboard</a>
+<a href="/admin/export">Export CSV</a>
+<a href="/admin/logout">Logout</a>
+{% endblock %}
+
+{% block content %}
+<h2>All Review Tokens</h2>
+
+{% if tokens %}
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Author</th>
+        <th>Email</th>
+        <th>Papers</th>
+        <th>Progress</th>
+        <th>Created</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tokens %}
+      <tr>
+        <td>{{ t.author_name }}</td>
+        <td>{{ t.author_email }}</td>
+        <td>{{ t.total }}</td>
+        <td>
+          <div class="progress-bar-container" style="width: 100px; display: inline-block; vertical-align: middle;">
+            <div class="progress-bar-fill" style="width: {{ (t.reviewed / t.total * 100) if t.total > 0 else 0 }}%;"></div>
+          </div>
+          <span class="progress-text">{{ t.reviewed }}/{{ t.total }}</span>
+        </td>
+        <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>
+          {% if t.is_active %}
+          <span style="color: #28a745;">Active</span>
+          {% else %}
+          <span style="color: #999;">Inactive</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if t.is_active %}
+          <form method="post" action="/admin/deactivate/{{ t.id }}" style="display: inline;">
+            <button type="submit" class="btn btn-danger btn-sm"
+                    onclick="return confirm('Deactivate this token?')">Deactivate</button>
+          </form>
+          {% endif %}
+          <div class="copy-url-container" style="margin-top: 4px;">
+            <input type="text" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;"
+                   value="{{ base_url }}/review/{{ t.id }}" readonly>
+            <button type="button" class="btn btn-secondary btn-sm btn-copy">Copy</button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card">
+  <p style="color: #999;">No tokens created yet.</p>
+</div>
+{% endif %}
+{% endblock %}

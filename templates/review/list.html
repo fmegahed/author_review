@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}All Papers{% endblock %}
+{% block content_class %}narrow{% endblock %}
+
+{% block content %}
+<h2>Your Papers</h2>
+
+<div style="margin-bottom: 20px;">
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" style="width: {{ progress_pct }}%;"></div>
+  </div>
+  <p class="progress-text">{{ reviewed_count }} of {{ total_papers }} reviewed</p>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Track</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for paper in papers %}
+      <tr>
+        <td>{{ paper.display_order }}</td>
+        <td>
+          <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank">{{ paper.title }}</a>
+        </td>
+        <td><span class="track-badge {{ paper.track }}">{{ paper.track }}</span></td>
+        <td>
+          {% if paper.reviewed %}
+          <span class="status-reviewed">Reviewed</span>
+          {% else %}
+          <span class="status-pending">Pending</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="/review/{{ token }}/paper/{{ paper.assignment_id }}" class="btn btn-sm {{ 'btn-secondary' if paper.reviewed else 'btn-primary' }}">
+            {{ 'Edit' if paper.reviewed else 'Review' }}
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if remaining > 0 %}
+<div style="text-align: center;">
+  <a href="/review/{{ token }}/next" class="btn btn-primary">Continue to Next Unreviewed Paper</a>
+</div>
+{% else %}
+<div style="text-align: center;">
+  <a href="/review/{{ token }}/thank-you" class="btn btn-primary">Done - View Completion Page</a>
+</div>
+{% endif %}
+{% endblock %}

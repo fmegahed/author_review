@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Review: {{ paper_title }}{% endblock %}
+{% block content_class %}narrow{% endblock %}
+
+{% block content %}
+<!-- Progress -->
+<div style="margin-bottom: 20px;">
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" style="width: {{ progress_pct }}%;"></div>
+  </div>
+  <p class="progress-text">Paper {{ current_num }} of {{ total_papers }} &mdash; {{ reviewed_count }} reviewed</p>
+</div>
+
+<!-- Paper Header -->
+<div class="paper-header">
+  <h2>{{ paper_title }}</h2>
+  <p class="paper-meta">
+    <span class="track-badge {{ track }}">{{ track_label }}</span>
+    &nbsp; arXiv: <a href="https://arxiv.org/abs/{{ arxiv_id }}" target="_blank">{{ arxiv_id }}</a>
+    &nbsp; | &nbsp; {{ authors }}
+  </p>
+</div>
+
+{% if not paper_data %}
+<div class="warning-card">
+  <p><strong>Data unavailable.</strong> This paper's factsheet data could not be loaded from the source.
+     It may have been removed or the data source is temporarily unavailable.</p>
+  <a href="/review/{{ token }}/next" class="btn btn-secondary">Skip to Next Paper</a>
+</div>
+{% else %}
+
+<!-- Review Form -->
+<form id="review-form" method="post" action="/review/{{ token }}/paper/{{ assignment_id }}">
+
+  <!-- Common Fields -->
+  {% for field in common_fields %}
+  <div class="field-card">
+    <div class="field-label">{{ field.question }}</div>
+    <div class="field-value {% if field.mathjax %}mathjax-content{% endif %}">{% if field.mathjax %}{{ field.value | safe }}{% else %}{{ field.value }}{% endif %}</div>
+
+    <div class="radio-toggle">
+      <input type="radio" id="{{ field.key }}_correct_true" name="{{ field.key }}_correct" value="true"
+             {% if existing and existing[field.key ~ '_correct'] == true %}checked{% endif %}>
+      <label for="{{ field.key }}_correct_true">Correct</label>
+      <input type="radio" id="{{ field.key }}_correct_false" name="{{ field.key }}_correct" value="false"
+             {% if existing and existing[field.key ~ '_correct'] == false %}checked{% endif %}>
+      <label for="{{ field.key }}_correct_false">Incorrect</label>
+    </div>
+
+    <div class="comment-section">
+      <button type="button" class="comment-toggle">Add comment (optional)</button>
+      <div class="comment-box">
+        <textarea name="{{ field.key }}_comment" class="form-control"
+                  placeholder="What's wrong or what would you change?">{{ existing[field.key ~ '_comment'] or '' if existing else '' }}</textarea>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Track-Specific Fields -->
+  {% for field in track_fields %}
+  <div class="field-card">
+    <div class="field-label">Is this {{ field.label }} classification correct?</div>
+    <div class="field-value">{{ field.value }}</div>
+
+    <div class="radio-toggle">
+      <input type="radio" id="{{ field.key }}_correct_true" name="{{ field.key }}_correct" value="true"
+             {% if existing and existing[field.key ~ '_correct'] == true %}checked{% endif %}>
+      <label for="{{ field.key }}_correct_true">Correct</label>
+      <input type="radio" id="{{ field.key }}_correct_false" name="{{ field.key }}_correct" value="false"
+             {% if existing and existing[field.key ~ '_correct'] == false %}checked{% endif %}>
+      <label for="{{ field.key }}_correct_false">Incorrect</label>
+    </div>
+
+    <div class="comment-section">
+      <button type="button" class="comment-toggle">Add comment (optional)</button>
+      <div class="comment-box">
+        <textarea name="{{ field.key }}_comment" class="form-control"
+                  placeholder="What's wrong or what would you change?">{{ existing[field.key ~ '_comment'] or '' if existing else '' }}</textarea>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <div style="display: flex; gap: 12px; justify-content: space-between; margin-top: 24px;">
+    <a href="/review/{{ token }}/list" class="btn btn-secondary">All Papers</a>
+    <button type="submit" class="btn btn-primary" style="flex: 1; max-width: 300px;">
+      {% if existing %}Update & Continue{% else %}Submit & Continue{% endif %}
+    </button>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

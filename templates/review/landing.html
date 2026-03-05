@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+{% block content_class %}narrow{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; margin-top: 40px;">
+  <h2>Welcome, {{ author_name }}!</h2>
+  <p>Thank you for helping us validate the AI-generated factsheets for your research papers.</p>
+  <p>You have <strong>{{ total_papers }}</strong> paper{{ 's' if total_papers != 1 else '' }} to review.
+     {% if reviewed > 0 %}You've already reviewed <strong>{{ reviewed }}</strong>.{% endif %}
+  </p>
+
+  <div class="info-card" style="text-align: left;">
+    <p><strong>Why your review matters:</strong></p>
+    <p>Our research team uses AI (large language models) to automatically extract structured factsheets
+       from arXiv papers. Your expert review helps us assess the quality of these extractions.
+       Results will be reported <strong>in aggregate</strong> in our academic publication on
+       Generative AI for Quality Engineering &mdash; no individual responses will be attributed
+       to you by name. Your feedback will also help us improve the extraction pipeline for future use.</p>
+  </div>
+
+  <div class="info-card" style="text-align: left;">
+    <p><strong>How it works:</strong></p>
+    <p>For each paper, you'll see AI-extracted information (summary, key results, equations, etc.)
+       and be asked whether each extraction is <strong>Correct</strong> or <strong>Incorrect</strong>.
+       You can optionally add comments explaining what's wrong.</p>
+  </div>
+
+  {% if remaining > 0 %}
+  <a href="/review/{{ token }}/next" class="btn btn-primary" style="font-size: 1.1rem; padding: 14px 32px;">
+    {% if reviewed > 0 %}Continue Reviewing{% else %}Start Reviewing{% endif %}
+  </a>
+  {% else %}
+  <a href="/review/{{ token }}/thank-you" class="btn btn-primary" style="font-size: 1.1rem; padding: 14px 32px;">
+    View Completion Page
+  </a>
+  {% endif %}
+
+  <div style="margin-top: 16px;">
+    <a href="/review/{{ token }}/list" style="color: var(--miami-red);">View all papers</a>
+  </div>
+</div>
+{% endblock %}
