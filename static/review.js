@@ -1,31 +1,35 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // Re-render MathJax when page loads
+  // Render markdown in field values, then typeset MathJax
+  if (window.marked && window.DOMPurify) {
+    document.querySelectorAll('.field-value').forEach(function (el) {
+      var text = el.textContent;
+      el.innerHTML = DOMPurify.sanitize(marked.parse(text));
+    });
+  }
+
+  // Re-render MathJax after markdown conversion
   if (window.MathJax && window.MathJax.typesetPromise) {
     window.MathJax.typesetPromise();
   }
 
-  // Radio toggle interactions
-  document.querySelectorAll('.radio-toggle input[type="radio"]').forEach(function (radio) {
+  // Likert scale interactions
+  document.querySelectorAll('.likert-option input[type="radio"]').forEach(function (radio) {
     radio.addEventListener('change', function () {
       var fieldCard = this.closest('.field-card');
       if (!fieldCard) return;
 
-      // Update card border color
-      fieldCard.classList.remove('answered-correct', 'answered-incorrect');
-      if (this.value === 'true') {
-        fieldCard.classList.add('answered-correct');
-      } else {
-        fieldCard.classList.add('answered-incorrect');
+      // Remove all answered classes
+      for (var i = 1; i <= 5; i++) {
+        fieldCard.classList.remove('answered-' + i);
       }
+      fieldCard.classList.add('answered-' + this.value);
 
-      // Auto-show comment box when "Incorrect" is selected
+      // Auto-show comment box when rating is 1 or 2
       var commentBox = fieldCard.querySelector('.comment-box');
-      if (commentBox) {
-        if (this.value === 'false') {
-          commentBox.classList.add('visible');
-          var textarea = commentBox.querySelector('textarea');
-          if (textarea) textarea.focus();
-        }
+      if (commentBox && (this.value === '1' || this.value === '2')) {
+        commentBox.classList.add('visible');
+        var textarea = commentBox.querySelector('textarea');
+        if (textarea) textarea.focus();
       }
     });
   });
@@ -52,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var allAnswered = true;
 
       fieldCards.forEach(function (card) {
-        var radios = card.querySelectorAll('input[type="radio"]');
+        var radios = card.querySelectorAll('.likert-option input[type="radio"]');
         var answered = Array.from(radios).some(function (r) { return r.checked; });
         if (!answered) {
           allAnswered = false;
@@ -63,11 +67,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!allAnswered) {
         e.preventDefault();
-        var firstUnanswered = form.querySelector('.field-card:not(.answered-correct):not(.answered-incorrect)');
+        var firstUnanswered = form.querySelector('.field-card:not([class*="answered-"])');
         if (firstUnanswered) {
           firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-        alert('Please answer all questions before submitting.');
+        alert('Please rate all questions before submitting.');
       }
     });
   }
@@ -86,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Initialize state for pre-filled forms (editing)
-  document.querySelectorAll('.radio-toggle input[type="radio"]:checked').forEach(function (radio) {
+  document.querySelectorAll('.likert-option input[type="radio"]:checked').forEach(function (radio) {
     radio.dispatchEvent(new Event('change'));
   });
 

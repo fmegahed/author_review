@@ -68,5 +68,5 @@ COMMON_FIELDS = [
     {"key": "summary", "label": "AI Summary", "question": "Is this AI Summary correct?"},
     {"key": "key_results", "label": "Key Results", "question": "Are these Key Results correct?"},
     {"key": "key_equations", "label": "Key Equations", "question": "Are these Key Equations correct?", "mathjax": True},
-    {"key": "future_work_unstated", "label": "Unstated Future Work", "question": "Is this Unstated Future Work reasonable?"},
+    {"key": "future_work_unstated", "label": "Unstated Future Work", "question": "Does the text below contain future work not discussed in the paper that is reasonable?"},
 ]

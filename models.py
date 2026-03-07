@@ -44,23 +44,23 @@ class Review(Base):
     updated_at = Column(DateTime, nullable=True)
 
     # Common fields
-    summary_correct = Column(Boolean, nullable=False)
+    summary_rating = Column(Integer, nullable=False)
     summary_comment = Column(Text, nullable=True)
-    key_results_correct = Column(Boolean, nullable=False)
+    key_results_rating = Column(Integer, nullable=False)
     key_results_comment = Column(Text, nullable=True)
-    key_equations_correct = Column(Boolean, nullable=False)
+    key_equations_rating = Column(Integer, nullable=False)
     key_equations_comment = Column(Text, nullable=True)
-    future_work_unstated_correct = Column(Boolean, nullable=False)
+    future_work_unstated_rating = Column(Integer, nullable=False)
     future_work_unstated_comment = Column(Text, nullable=True)
 
     # Track-specific fields
-    track_field_1_correct = Column(Boolean, nullable=False)
+    track_field_1_rating = Column(Integer, nullable=False)
     track_field_1_comment = Column(Text, nullable=True)
-    track_field_2_correct = Column(Boolean, nullable=False)
+    track_field_2_rating = Column(Integer, nullable=False)
     track_field_2_comment = Column(Text, nullable=True)
-    track_field_3_correct = Column(Boolean, nullable=False)
+    track_field_3_rating = Column(Integer, nullable=False)
     track_field_3_comment = Column(Text, nullable=True)
-    track_field_4_correct = Column(Boolean, nullable=False)
+    track_field_4_rating = Column(Integer, nullable=False)
     track_field_4_comment = Column(Text, nullable=True)
 
     assignment = relationship("PaperAssignment", back_populates="review")

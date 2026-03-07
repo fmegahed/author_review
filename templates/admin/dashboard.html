@@ -17,8 +17,12 @@
   <form method="post" action="/admin/search">
     <div class="form-group">
       <label for="author_name">Author Name</label>
-      <input type="text" id="author_name" name="author_name" class="form-control"
-             placeholder="e.g., Fadel M. Megahed" value="{{ search_name or '' }}" required>
+      <div class="autocomplete-container">
+        <input type="text" id="author_name" name="author_name" class="form-control"
+               placeholder="Start typing an author name..." value="{{ search_name or '' }}" required
+               autocomplete="off">
+        <div id="autocomplete-list" class="autocomplete-list"></div>
+      </div>
     </div>
     <button type="submit" class="btn btn-primary">Search All Tracks</button>
     <a href="/admin/refresh-cache" class="btn btn-secondary btn-sm" style="margin-left: 8px;">Refresh CSV Cache</a>
@@ -123,8 +127,96 @@
 </div>
 
 <script>
+// Select-all checkbox
 document.getElementById('select-all')?.addEventListener('change', function() {
   document.querySelectorAll('input[name="arxiv_ids"]').forEach(cb => cb.checked = this.checked);
 });
+
+// Author autocomplete
+(function() {
+  var authors = {{ all_authors_json | safe }};
+  var input = document.getElementById('author_name');
+  var list = document.getElementById('autocomplete-list');
+  if (!input || !list) return;
+
+  var activeIndex = -1;
+
+  function showSuggestions(query) {
+    list.replaceChildren();
+    activeIndex = -1;
+    if (!query || query.length < 2) {
+      list.style.display = 'none';
+      return;
+    }
+    var q = query.toLowerCase();
+    var matches = authors.filter(function(a) {
+      return a.toLowerCase().includes(q);
+    }).slice(0, 10);
+
+    if (matches.length === 0) {
+      list.style.display = 'none';
+      return;
+    }
+
+    matches.forEach(function(name) {
+      var div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      var idx = name.toLowerCase().indexOf(q);
+      if (idx >= 0) {
+        div.appendChild(document.createTextNode(name.substring(0, idx)));
+        var strong = document.createElement('strong');
+        strong.textContent = name.substring(idx, idx + query.length);
+        div.appendChild(strong);
+        div.appendChild(document.createTextNode(name.substring(idx + query.length)));
+      } else {
+        div.textContent = name;
+      }
+      div.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        input.value = name;
+        list.style.display = 'none';
+      });
+      list.appendChild(div);
+    });
+    list.style.display = 'block';
+  }
+
+  input.addEventListener('input', function() {
+    showSuggestions(this.value);
+  });
+
+  input.addEventListener('keydown', function(e) {
+    var items = list.querySelectorAll('.autocomplete-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      updateActive(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+      updateActive(items);
+    } else if (e.key === 'Enter' && activeIndex >= 0) {
+      e.preventDefault();
+      input.value = items[activeIndex].textContent;
+      list.style.display = 'none';
+    }
+  });
+
+  function updateActive(items) {
+    items.forEach(function(item, i) {
+      item.classList.toggle('active', i === activeIndex);
+    });
+    if (activeIndex >= 0) items[activeIndex].scrollIntoView({ block: 'nearest' });
+  }
+
+  input.addEventListener('blur', function() {
+    setTimeout(function() { list.style.display = 'none'; }, 150);
+  });
+
+  input.addEventListener('focus', function() {
+    if (this.value.length >= 2) showSuggestions(this.value);
+  });
+})();
 </script>
 {% endblock %}

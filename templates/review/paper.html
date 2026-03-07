@@ -37,15 +37,22 @@
   {% for field in common_fields %}
   <div class="field-card">
     <div class="field-label">{{ field.question }}</div>
-    <div class="field-value {% if field.mathjax %}mathjax-content{% endif %}">{% if field.mathjax %}{{ field.value | safe }}{% else %}{{ field.value }}{% endif %}</div>
+    <div class="field-value">{{ field.value }}</div>
 
-    <div class="radio-toggle">
-      <input type="radio" id="{{ field.key }}_correct_true" name="{{ field.key }}_correct" value="true"
-             {% if existing and existing[field.key ~ '_correct'] == true %}checked{% endif %}>
-      <label for="{{ field.key }}_correct_true">Correct</label>
-      <input type="radio" id="{{ field.key }}_correct_false" name="{{ field.key }}_correct" value="false"
-             {% if existing and existing[field.key ~ '_correct'] == false %}checked{% endif %}>
-      <label for="{{ field.key }}_correct_false">Incorrect</label>
+    <div class="likert-scale">
+      <div class="likert-labels">
+        <span>Completely Incorrect</span>
+        <span>Completely Correct</span>
+      </div>
+      <div class="likert-options">
+        {% for val in range(1, 6) %}
+        <label class="likert-option">
+          <input type="radio" name="{{ field.key }}_rating" value="{{ val }}"
+                 {% if existing and existing[field.key ~ '_rating'] == val %}checked{% endif %}>
+          <span class="likert-dot">{{ val }}</span>
+        </label>
+        {% endfor %}
+      </div>
     </div>
 
     <div class="comment-section">
@@ -64,13 +71,20 @@
     <div class="field-label">Is this {{ field.label }} classification correct?</div>
     <div class="field-value">{{ field.value }}</div>
 
-    <div class="radio-toggle">
-      <input type="radio" id="{{ field.key }}_correct_true" name="{{ field.key }}_correct" value="true"
-             {% if existing and existing[field.key ~ '_correct'] == true %}checked{% endif %}>
-      <label for="{{ field.key }}_correct_true">Correct</label>
-      <input type="radio" id="{{ field.key }}_correct_false" name="{{ field.key }}_correct" value="false"
-             {% if existing and existing[field.key ~ '_correct'] == false %}checked{% endif %}>
-      <label for="{{ field.key }}_correct_false">Incorrect</label>
+    <div class="likert-scale">
+      <div class="likert-labels">
+        <span>Completely Incorrect</span>
+        <span>Completely Correct</span>
+      </div>
+      <div class="likert-options">
+        {% for val in range(1, 6) %}
+        <label class="likert-option">
+          <input type="radio" name="{{ field.key }}_rating" value="{{ val }}"
+                 {% if existing and existing[field.key ~ '_rating'] == val %}checked{% endif %}>
+          <span class="likert-dot">{{ val }}</span>
+        </label>
+        {% endfor %}
+      </div>
     </div>
 
     <div class="comment-section">

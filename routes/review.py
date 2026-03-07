@@ -110,21 +110,21 @@ async def review_paper(token: str, assignment_id: int, request: Request, db: Ses
     if assignment.review:
         r = assignment.review
         existing = {
-            "summary_correct": r.summary_correct,
+            "summary_rating": r.summary_rating,
             "summary_comment": r.summary_comment or "",
-            "key_results_correct": r.key_results_correct,
+            "key_results_rating": r.key_results_rating,
             "key_results_comment": r.key_results_comment or "",
-            "key_equations_correct": r.key_equations_correct,
+            "key_equations_rating": r.key_equations_rating,
             "key_equations_comment": r.key_equations_comment or "",
-            "future_work_unstated_correct": r.future_work_unstated_correct,
+            "future_work_unstated_rating": r.future_work_unstated_rating,
             "future_work_unstated_comment": r.future_work_unstated_comment or "",
-            "track_field_1_correct": r.track_field_1_correct,
+            "track_field_1_rating": r.track_field_1_rating,
             "track_field_1_comment": r.track_field_1_comment or "",
-            "track_field_2_correct": r.track_field_2_correct,
+            "track_field_2_rating": r.track_field_2_rating,
             "track_field_2_comment": r.track_field_2_comment or "",
-            "track_field_3_correct": r.track_field_3_correct,
+            "track_field_3_rating": r.track_field_3_rating,
             "track_field_3_comment": r.track_field_3_comment or "",
-            "track_field_4_correct": r.track_field_4_correct,
+            "track_field_4_rating": r.track_field_4_rating,
             "track_field_4_comment": r.track_field_4_comment or "",
         }
 
@@ -159,21 +159,21 @@ async def submit_review(
     assignment_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    summary_correct: str = Form(...),
+    summary_rating: str = Form(...),
     summary_comment: str = Form(""),
-    key_results_correct: str = Form(...),
+    key_results_rating: str = Form(...),
     key_results_comment: str = Form(""),
-    key_equations_correct: str = Form(...),
+    key_equations_rating: str = Form(...),
     key_equations_comment: str = Form(""),
-    future_work_unstated_correct: str = Form(...),
+    future_work_unstated_rating: str = Form(...),
     future_work_unstated_comment: str = Form(""),
-    track_field_1_correct: str = Form(...),
+    track_field_1_rating: str = Form(...),
     track_field_1_comment: str = Form(""),
-    track_field_2_correct: str = Form(...),
+    track_field_2_rating: str = Form(...),
     track_field_2_comment: str = Form(""),
-    track_field_3_correct: str = Form(...),
+    track_field_3_rating: str = Form(...),
     track_field_3_comment: str = Form(""),
-    track_field_4_correct: str = Form(...),
+    track_field_4_rating: str = Form(...),
     track_field_4_comment: str = Form(""),
 ):
     review_token = _get_valid_token(token, db)
@@ -188,25 +188,22 @@ async def submit_review(
     if not assignment:
         return RedirectResponse(f"/review/{token}/list", status_code=302)
 
-    def to_bool(val: str) -> bool:
-        return val.lower() == "true"
-
     review_data = {
-        "summary_correct": to_bool(summary_correct),
+        "summary_rating": int(summary_rating),
         "summary_comment": summary_comment.strip() or None,
-        "key_results_correct": to_bool(key_results_correct),
+        "key_results_rating": int(key_results_rating),
         "key_results_comment": key_results_comment.strip() or None,
-        "key_equations_correct": to_bool(key_equations_correct),
+        "key_equations_rating": int(key_equations_rating),
         "key_equations_comment": key_equations_comment.strip() or None,
-        "future_work_unstated_correct": to_bool(future_work_unstated_correct),
+        "future_work_unstated_rating": int(future_work_unstated_rating),
         "future_work_unstated_comment": future_work_unstated_comment.strip() or None,
-        "track_field_1_correct": to_bool(track_field_1_correct),
+        "track_field_1_rating": int(track_field_1_rating),
         "track_field_1_comment": track_field_1_comment.strip() or None,
-        "track_field_2_correct": to_bool(track_field_2_correct),
+        "track_field_2_rating": int(track_field_2_rating),
         "track_field_2_comment": track_field_2_comment.strip() or None,
-        "track_field_3_correct": to_bool(track_field_3_correct),
+        "track_field_3_rating": int(track_field_3_rating),
         "track_field_3_comment": track_field_3_comment.strip() or None,
-        "track_field_4_correct": to_bool(track_field_4_correct),
+        "track_field_4_rating": int(track_field_4_rating),
         "track_field_4_comment": track_field_4_comment.strip() or None,
     }
 

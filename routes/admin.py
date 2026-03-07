@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import uuid
 from datetime import datetime, timezone
 
@@ -11,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from config import ADMIN_PASSWORD, BASE_URL, SECRET_KEY, TRACK_FIELD_MAPPINGS, TRACKS
 from database import get_db
-from data_loader import clear_cache, find_author_papers
+from data_loader import clear_cache, find_author_papers, get_all_authors
 from models import PaperAssignment, Review, ReviewToken
 
 router = APIRouter(prefix="/admin")
@@ -85,12 +86,15 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     recent_tokens = db.query(ReviewToken).order_by(ReviewToken.created_at.desc()).limit(10).all()
     recent_stats = [_get_token_stats(db, t) for t in recent_tokens]
 
+    all_authors = get_all_authors()
+
     return templates.TemplateResponse("admin/dashboard.html", {
         "request": request,
         "recent_tokens": recent_stats,
         "search_results": None,
         "search_name": None,
         "generated_url": None,
+        "all_authors_json": json.dumps(all_authors),
     })
 
 
@@ -104,12 +108,15 @@ async def search_author(request: Request, db: Session = Depends(get_db), author_
     recent_tokens = db.query(ReviewToken).order_by(ReviewToken.created_at.desc()).limit(10).all()
     recent_stats = [_get_token_stats(db, t) for t in recent_tokens]
 
+    all_authors = get_all_authors()
+
     return templates.TemplateResponse("admin/dashboard.html", {
         "request": request,
         "search_results": results,
         "search_name": author_name,
         "recent_tokens": recent_stats,
         "generated_url": None,
+        "all_authors_json": json.dumps(all_authors),
     })
 
 
@@ -149,6 +156,8 @@ async def create_token(
     recent_tokens = db.query(ReviewToken).order_by(ReviewToken.created_at.desc()).limit(10).all()
     recent_stats = [_get_token_stats(db, t) for t in recent_tokens]
 
+    all_authors = get_all_authors()
+
     return templates.TemplateResponse("admin/dashboard.html", {
         "request": request,
         "search_results": None,
@@ -156,6 +165,7 @@ async def create_token(
         "recent_tokens": recent_stats,
         "generated_url": generated_url,
         "token_author": author_name,
+        "all_authors_json": json.dumps(all_authors),
     })
 
 
@@ -207,14 +217,14 @@ async def export_csv(request: Request, db: Session = Depends(get_db)):
 
     header = [
         "arxiv_id", "track", "author_name", "author_email", "submitted_at",
-        "summary_correct", "summary_comment",
-        "key_results_correct", "key_results_comment",
-        "key_equations_correct", "key_equations_comment",
-        "future_work_unstated_correct", "future_work_unstated_comment",
-        "track_field_1_name", "track_field_1_correct", "track_field_1_comment",
-        "track_field_2_name", "track_field_2_correct", "track_field_2_comment",
-        "track_field_3_name", "track_field_3_correct", "track_field_3_comment",
-        "track_field_4_name", "track_field_4_correct", "track_field_4_comment",
+        "summary_rating", "summary_comment",
+        "key_results_rating", "key_results_comment",
+        "key_equations_rating", "key_equations_comment",
+        "future_work_unstated_rating", "future_work_unstated_comment",
+        "track_field_1_name", "track_field_1_rating", "track_field_1_comment",
+        "track_field_2_name", "track_field_2_rating", "track_field_2_comment",
+        "track_field_3_name", "track_field_3_rating", "track_field_3_comment",
+        "track_field_4_name", "track_field_4_rating", "track_field_4_comment",
     ]
     writer.writerow(header)
 
@@ -226,14 +236,14 @@ async def export_csv(request: Request, db: Session = Depends(get_db)):
         row = [
             a.arxiv_id, a.track, t.author_name, t.author_email,
             r.submitted_at.isoformat() if r.submitted_at else "",
-            r.summary_correct, r.summary_comment or "",
-            r.key_results_correct, r.key_results_comment or "",
-            r.key_equations_correct, r.key_equations_comment or "",
-            r.future_work_unstated_correct, r.future_work_unstated_comment or "",
-            field_map.get("track_field_1", {}).get("column", ""), r.track_field_1_correct, r.track_field_1_comment or "",
-            field_map.get("track_field_2", {}).get("column", ""), r.track_field_2_correct, r.track_field_2_comment or "",
-            field_map.get("track_field_3", {}).get("column", ""), r.track_field_3_correct, r.track_field_3_comment or "",
-            field_map.get("track_field_4", {}).get("column", ""), r.track_field_4_correct, r.track_field_4_comment or "",
+            r.summary_rating, r.summary_comment or "",
+            r.key_results_rating, r.key_results_comment or "",
+            r.key_equations_rating, r.key_equations_comment or "",
+            r.future_work_unstated_rating, r.future_work_unstated_comment or "",
+            field_map.get("track_field_1", {}).get("column", ""), r.track_field_1_rating, r.track_field_1_comment or "",
+            field_map.get("track_field_2", {}).get("column", ""), r.track_field_2_rating, r.track_field_2_comment or "",
+            field_map.get("track_field_3", {}).get("column", ""), r.track_field_3_rating, r.track_field_3_comment or "",
+            field_map.get("track_field_4", {}).get("column", ""), r.track_field_4_rating, r.track_field_4_comment or "",
         ]
         writer.writerow(row)
 

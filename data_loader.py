@@ -88,6 +88,23 @@ def find_author_papers(author_name: str) -> list[dict]:
     return results
 
 
+def get_all_authors() -> list[str]:
+    """Get sorted list of unique author names across all tracks."""
+    authors = set()
+    for track_id in TRACKS:
+        try:
+            metadata = get_metadata(track_id)
+        except Exception:
+            continue
+        for _, row in metadata.iterrows():
+            authors_raw = str(row.get("authors", ""))
+            for a in authors_raw.split("|"):
+                name = a.strip()
+                if name and name != "nan":
+                    authors.add(name)
+    return sorted(authors)
+
+
 def _format_list_sentence(field_label: str, items: list[str]) -> str:
     """Format a list of items as a natural-language sentence.
 
