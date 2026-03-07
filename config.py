@@ -63,6 +63,22 @@ TRACK_FIELD_MAPPINGS = {
     },
 }
 
+# --- Valid categories for track fields (excluding "Other") ---
+# Used to show context when a field is classified as "Other"
+FIELD_CATEGORIES = {
+    "chart_family": ["Univariate", "Multivariate", "Self-starting", "Profile monitoring", "Image-based monitoring", "Functional data analysis", "Bayesian", "Nonparametric", "High-dimensional"],
+    "chart_statistic": ["Shewhart", "CUSUM", "EWMA", "Hotelling T-squared", "MEWMA", "MCUSUM", "GLR", "Change-point", "Machine learning-based"],
+    "phase": ["Phase I", "Phase II", "Both"],
+    "application_domain": ["Manufacturing", "Semiconductor/electronics", "Healthcare/medical", "Pharmaceutical", "Finance/economics", "Environmental monitoring", "Network/cybersecurity", "Service industry", "Food/agriculture", "Energy/utilities", "Transportation/logistics", "Theoretical/simulation only"],
+    "design_type": ["Factorial (full)", "Factorial (fractional)", "Response surface", "Mixture", "Split-plot", "Optimal design", "Screening", "Definitive screening", "Supersaturated", "Robust parameter design", "Sequential/adaptive", "Computer experiment", "Bayesian design"],
+    "design_objective": ["Parameter estimation", "Screening", "Optimization", "Model discrimination", "Prediction", "Robustness", "Cost reduction"],
+    "optimality_criterion": ["D-optimal", "A-optimal", "I-optimal (IV-optimal)", "G-optimal", "E-optimal", "V-optimal", "Bayesian D-optimal", "Bayesian A-optimal", "Compound criterion", "Space-filling", "Minimax/Maximin", "Not applicable"],
+    "reliability_topic": ["Life distribution modeling", "Degradation modeling", "RUL prediction", "Failure mode analysis", "Accelerated testing", "Maintenance optimization", "System reliability", "Warranty analysis", "Reliability growth", "Software reliability", "Network/infrastructure reliability"],
+    "modeling_approach": ["Parametric (Weibull, etc.)", "Nonparametric/Semi-parametric", "Stochastic process", "Physics-based", "ML-based", "Bayesian", "Hybrid/Ensemble", "Simulation-based"],
+    "data_type": ["Complete lifetime data", "Right-censored", "Interval-censored", "Left-censored", "Degradation measurements", "Event/count data", "Sensor/condition monitoring", "Mixture of types", "Simulated only"],
+    "maintenance_policy": ["Age-based", "Block replacement", "Condition-based", "Predictive", "Opportunistic", "Group replacement", "Imperfect maintenance", "Not applicable"],
+}
+
 # Common review fields (same across all tracks)
 COMMON_FIELDS = [
     {"key": "summary", "label": "AI Summary", "question": "Is this AI Summary correct?"},

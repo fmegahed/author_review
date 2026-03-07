@@ -4,7 +4,7 @@ from io import StringIO
 import httpx
 import pandas as pd
 
-from config import CSV_BASE_URL, CSV_CACHE_TTL, TRACKS, TRACK_FIELD_MAPPINGS
+from config import CSV_BASE_URL, CSV_CACHE_TTL, FIELD_CATEGORIES, TRACKS, TRACK_FIELD_MAPPINGS
 
 # In-memory cache: {key: (dataframe, timestamp)}
 _cache: dict[str, tuple[pd.DataFrame, float]] = {}
@@ -111,6 +111,30 @@ def get_all_authors() -> list[str]:
     return sorted(authors)
 
 
+def _enrich_other_items(items: list[str], col: str) -> list[str]:
+    """Replace 'Other' with 'Other (i.e., not X, Y, or Z)' using FIELD_CATEGORIES."""
+    if col not in FIELD_CATEGORIES:
+        return items
+    other_indices = [i for i, v in enumerate(items) if v.strip().lower() == "other"]
+    if not other_indices:
+        return items
+    # Exclude categories already present in the items list
+    present = {v.strip().lower() for v in items if v.strip().lower() != "other"}
+    alternatives = [c for c in FIELD_CATEGORIES[col] if c.lower() not in present]
+    if not alternatives:
+        return items
+    if len(alternatives) == 1:
+        suffix = f" (i.e., not {alternatives[0]})"
+    elif len(alternatives) == 2:
+        suffix = f" (i.e., not {alternatives[0]} or {alternatives[1]})"
+    else:
+        suffix = " (i.e., not " + ", ".join(alternatives[:-1]) + f", or {alternatives[-1]})"
+    result = list(items)
+    for i in other_indices:
+        result[i] = f"Other{suffix}"
+    return result
+
+
 def _format_list_sentence(field_label: str, items: list[str]) -> str:
     """Format a list of items as a natural-language sentence.
 
@@ -158,9 +182,11 @@ def get_paper_factsheet_data(arxiv_id: str, track: str) -> dict | None:
         raw = str(combined.get(col, ""))
         if "|" in raw:
             items = [v.strip() for v in raw.split("|") if v.strip()]
+            items = _enrich_other_items(items, col)
             combined[col] = _format_list_sentence(label, items)
         elif raw and raw != "nan":
-            combined[col] = f"Our app captured the following {label}: {raw}."
+            enriched = _enrich_other_items([raw], col)
+            combined[col] = f"Our app captured the following {label}: {enriched[0]}."
 
     # Also clean common pipe-delimited fields
     for col in ["authors"]:
