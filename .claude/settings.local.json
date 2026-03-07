@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(docker compose:*)",
-      "Bash(mv .env:*)"
+      "Bash(mv .env:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)"
     ]
   }
 }
