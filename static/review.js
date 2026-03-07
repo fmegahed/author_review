@@ -94,6 +94,26 @@ document.addEventListener('DOMContentLoaded', function () {
     radio.dispatchEvent(new Event('change'));
   });
 
+  // Likert definition hints on hover
+  var defaultHintText = 'Hover over a label or rating to see its full definition.';
+  document.querySelectorAll('.likert-scale').forEach(function (scale) {
+    var hint = scale.querySelector('.likert-definition-hint');
+    if (!hint) return;
+
+    var triggers = scale.querySelectorAll('[data-definition]');
+    triggers.forEach(function (el) {
+      el.addEventListener('mouseenter', function () {
+        hint.textContent = this.getAttribute('data-definition');
+        hint.classList.add('has-definition');
+      });
+    });
+
+    scale.addEventListener('mouseleave', function () {
+      hint.textContent = defaultHintText;
+      hint.classList.remove('has-definition');
+    });
+  });
+
   // Show comment boxes that have content
   document.querySelectorAll('.comment-box textarea').forEach(function (textarea) {
     if (textarea.value.trim()) {

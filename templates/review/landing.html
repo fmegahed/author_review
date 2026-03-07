@@ -22,9 +22,40 @@
 
   <div class="info-card" style="text-align: left;">
     <p><strong>How it works:</strong></p>
-    <p>For each paper, you'll see AI-extracted information (summary, key results, equations, etc.)
-       and rate each field on a 1-5 scale from <strong>Completely Incorrect</strong> to
-       <strong>Completely Correct</strong>. You can optionally add comments explaining what's wrong.</p>
+    <p>For each paper, you'll review AI-extracted information and rate each field on a 1–5 scale.
+       Most fields are rated for <strong>correctness</strong>, while the
+       <em>Unstated Future Work</em> field is rated for <strong>reasonableness</strong>.
+       You can optionally add comments explaining your rating.
+       During the review, hover over any scale label or numbered button to see its full definition.</p>
+
+    <details class="scale-details">
+      <summary>View scale definitions</summary>
+      <div class="scale-tables">
+        <table class="scale-table">
+          <caption>Correctness scale <span class="scale-note">(used for most fields)</span></caption>
+          <thead><tr><th>Score</th><th>Anchor</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Incorrect</td><td>The response is wrong, unsupported by the paper, or clearly misrepresents the paper&rsquo;s content.</td></tr>
+            <tr><td>2</td><td>Mostly Incorrect</td><td>The response contains a small amount of correct information, but substantial errors, misclassifications, or important omissions remain.</td></tr>
+            <tr><td>3</td><td>Partially Correct</td><td>The response is a mix of correct and incorrect information, or it captures only part of what is supported by the paper.</td></tr>
+            <tr><td>4</td><td>Mostly Correct</td><td>The response is largely correct and supported by the paper, with only minor errors, omissions, or imprecision.</td></tr>
+            <tr><td>5</td><td>Correct</td><td>The response is correct, supported by the paper, and does not contain meaningful errors or omissions.</td></tr>
+          </tbody>
+        </table>
+        <br>
+        <table class="scale-table">
+          <caption>Reasonableness scale <span class="scale-note">(used for Unstated Future Work)</span></caption>
+          <thead><tr><th>Score</th><th>Anchor</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Unreasonable</td><td>The suggested future work is implausible, disconnected from the paper, or not meaningfully motivated by its content.</td></tr>
+            <tr><td>2</td><td>Mostly Unreasonable</td><td>The suggestion has limited connection to the paper and is only weakly justified by its methods, findings, or discussion.</td></tr>
+            <tr><td>3</td><td>Somewhat Reasonable</td><td>The suggestion is partially plausible and somewhat related to the paper, but the justification is incomplete or only moderately convincing.</td></tr>
+            <tr><td>4</td><td>Mostly Reasonable</td><td>The suggestion is plausible, relevant to the paper, and reasonably supported by its content, with only minor weaknesses in justification.</td></tr>
+            <tr><td>5</td><td>Reasonable</td><td>The suggested future work is plausible, well aligned with the paper, and strongly justified by its content.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
   </div>
 
   {% if remaining > 0 %}

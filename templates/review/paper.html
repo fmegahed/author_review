@@ -40,19 +40,21 @@
     <div class="field-value">{{ field.value }}</div>
 
     <div class="likert-scale">
-      <div class="likert-labels">
-        <span>Completely Incorrect</span>
-        <span>Completely Correct</span>
+      <div class="likert-anchor-labels">
+        {% for val in range(1, 6) %}
+        <span data-definition="{{ anchors[field.construct][val].definition }}">{{ anchors[field.construct][val].label }}</span>
+        {% endfor %}
       </div>
       <div class="likert-options">
         {% for val in range(1, 6) %}
-        <label class="likert-option">
+        <label class="likert-option" data-definition="{{ anchors[field.construct][val].definition }}">
           <input type="radio" name="{{ field.key }}_rating" value="{{ val }}"
                  {% if existing and existing[field.key ~ '_rating'] == val %}checked{% endif %}>
           <span class="likert-dot">{{ val }}</span>
         </label>
         {% endfor %}
       </div>
+      <div class="likert-definition-hint">Hover over a label or rating to see its full definition.</div>
     </div>
 
     <div class="comment-section">
@@ -72,19 +74,21 @@
     <div class="field-value">{{ field.value }}</div>
 
     <div class="likert-scale">
-      <div class="likert-labels">
-        <span>Completely Incorrect</span>
-        <span>Completely Correct</span>
+      <div class="likert-anchor-labels">
+        {% for val in range(1, 6) %}
+        <span data-definition="{{ anchors.correctness[val].definition }}">{{ anchors.correctness[val].label }}</span>
+        {% endfor %}
       </div>
       <div class="likert-options">
         {% for val in range(1, 6) %}
-        <label class="likert-option">
+        <label class="likert-option" data-definition="{{ anchors.correctness[val].definition }}">
           <input type="radio" name="{{ field.key }}_rating" value="{{ val }}"
                  {% if existing and existing[field.key ~ '_rating'] == val %}checked{% endif %}>
           <span class="likert-dot">{{ val }}</span>
         </label>
         {% endfor %}
       </div>
+      <div class="likert-definition-hint">Hover over a label or rating to see its full definition.</div>
     </div>
 
     <div class="comment-section">

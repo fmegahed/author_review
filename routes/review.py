@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from config import COMMON_FIELDS, TRACK_FIELD_MAPPINGS, TRACKS
+from config import COMMON_FIELDS, LIKERT_ANCHORS, TRACK_FIELD_MAPPINGS, TRACKS
 from database import get_db
 from data_loader import get_paper_factsheet_data
 from models import PaperAssignment, Review, ReviewToken
@@ -90,6 +90,7 @@ async def review_paper(token: str, assignment_id: int, request: Request, db: Ses
             "question": f["question"],
             "value": value,
             "mathjax": f.get("mathjax", False),
+            "construct": f.get("construct", "correctness"),
         })
 
     # Build track-specific field data
@@ -150,6 +151,7 @@ async def review_paper(token: str, assignment_id: int, request: Request, db: Ses
         "total_papers": stats["total"],
         "reviewed_count": reviewed_count,
         "progress_pct": progress_pct,
+        "anchors": LIKERT_ANCHORS,
     })
 
 

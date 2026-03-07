@@ -79,10 +79,28 @@ FIELD_CATEGORIES = {
     "maintenance_policy": ["Age-based", "Block replacement", "Condition-based", "Predictive", "Opportunistic", "Group replacement", "Imperfect maintenance", "Not applicable"],
 }
 
+# --- Likert scale anchors ---
+LIKERT_ANCHORS = {
+    "correctness": {
+        1: {"label": "Incorrect", "definition": "The response is wrong, unsupported by the paper, or clearly misrepresents the paper\u2019s content."},
+        2: {"label": "Mostly Incorrect", "definition": "The response contains a small amount of correct information, but substantial errors, misclassifications, or important omissions remain."},
+        3: {"label": "Partially Correct", "definition": "The response is a mix of correct and incorrect information, or it captures only part of what is supported by the paper."},
+        4: {"label": "Mostly Correct", "definition": "The response is largely correct and supported by the paper, with only minor errors, omissions, or imprecision."},
+        5: {"label": "Correct", "definition": "The response is correct, supported by the paper, and does not contain meaningful errors or omissions."},
+    },
+    "reasonableness": {
+        1: {"label": "Unreasonable", "definition": "The suggested future work is implausible, disconnected from the paper, or not meaningfully motivated by its content."},
+        2: {"label": "Mostly Unreasonable", "definition": "The suggestion has limited connection to the paper and is only weakly justified by its methods, findings, or discussion."},
+        3: {"label": "Somewhat Reasonable", "definition": "The suggestion is partially plausible and somewhat related to the paper, but the justification is incomplete or only moderately convincing."},
+        4: {"label": "Mostly Reasonable", "definition": "The suggestion is plausible, relevant to the paper, and reasonably supported by its content, with only minor weaknesses in justification."},
+        5: {"label": "Reasonable", "definition": "The suggested future work is plausible, well aligned with the paper, and strongly justified by its content."},
+    },
+}
+
 # Common review fields (same across all tracks)
 COMMON_FIELDS = [
-    {"key": "summary", "label": "AI Summary", "question": "Is this AI Summary correct?"},
-    {"key": "key_results", "label": "Key Results", "question": "Are these Key Results correct?"},
-    {"key": "key_equations", "label": "Key Equations", "question": "Are these Key Equations correct?", "mathjax": True},
-    {"key": "future_work_unstated", "label": "Unstated Future Work", "question": "Does the text below contain future work not discussed in the paper that is reasonable?"},
+    {"key": "summary", "label": "AI Summary", "question": "Is this AI Summary correct?", "construct": "correctness"},
+    {"key": "key_results", "label": "Key Results", "question": "Are these Key Results correct?", "construct": "correctness"},
+    {"key": "key_equations", "label": "Key Equations", "question": "Are these Key Equations correct?", "mathjax": True, "construct": "correctness"},
+    {"key": "future_work_unstated", "label": "Unstated Future Work", "question": "Is the suggested future work, which is not explicitly discussed in the paper, reasonable given the paper's content?", "construct": "reasonableness"},
 ]
