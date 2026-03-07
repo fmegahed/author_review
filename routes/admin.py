@@ -104,7 +104,9 @@ async def search_author(request: Request, db: Session = Depends(get_db), author_
     if redirect:
         return redirect
 
-    results = find_author_papers(author_name)
+    author_names = [name.strip() for name in author_name.split(",") if name.strip()]
+    results = find_author_papers(author_names)
+    display_name = ", ".join(author_names)
     recent_tokens = db.query(ReviewToken).order_by(ReviewToken.created_at.desc()).limit(10).all()
     recent_stats = [_get_token_stats(db, t) for t in recent_tokens]
 
@@ -113,7 +115,8 @@ async def search_author(request: Request, db: Session = Depends(get_db), author_
     return templates.TemplateResponse("admin/dashboard.html", {
         "request": request,
         "search_results": results,
-        "search_name": author_name,
+        "search_name": display_name,
+        "default_author_name": author_names[0] if author_names else "",
         "recent_tokens": recent_stats,
         "generated_url": None,
         "all_authors_json": json.dumps(all_authors),

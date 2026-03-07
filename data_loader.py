@@ -48,14 +48,15 @@ def clear_cache():
     _cache.clear()
 
 
-def find_author_papers(author_name: str) -> list[dict]:
-    """Search all tracks for papers by this author.
+def find_author_papers(author_names: list[str]) -> list[dict]:
+    """Search all tracks for papers by any of the given author name variants.
 
     Returns list of dicts: {arxiv_id, title, track, submitted, authors}
-    sorted newest-first.
+    sorted newest-first, deduplicated by (arxiv_id, track).
     """
     results = []
-    author_lower = author_name.strip().lower()
+    seen = set()
+    names_lower = [name.strip().lower() for name in author_names if name.strip()]
 
     for track_id, track_cfg in TRACKS.items():
         try:
@@ -72,9 +73,14 @@ def find_author_papers(author_name: str) -> list[dict]:
             if paper_id not in factsheet_ids:
                 continue
 
+            dedup_key = (paper_id, track_id)
+            if dedup_key in seen:
+                continue
+
             authors_raw = str(row.get("authors", ""))
             author_list = [a.strip() for a in authors_raw.split("|")]
-            if any(author_lower == a.lower() for a in author_list):
+            if any(nl == a.lower() for nl in names_lower for a in author_list):
+                seen.add(dedup_key)
                 results.append({
                     "arxiv_id": paper_id,
                     "title": str(row.get("title", "Untitled")),
